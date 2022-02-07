@@ -1,5 +1,7 @@
 # workshop-APIs
 
+Live Link : https://gsg-g11.github.io/Salma-Fady-GithubApi/
+
 In this workshop we'll build on things we've learnt so far by using the GitHub API in order to practise:
 
 - Making HTTP Get requests on the client side
