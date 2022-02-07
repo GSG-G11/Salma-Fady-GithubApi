@@ -1,7 +1,7 @@
 /* let's go! */
 const searchBtn = document.querySelector(".search-btn");
 const userName = document.querySelector(".user-name");
-
+const errheader = document.querySelector(".err-handler");
 const domManpulation = (selector, cb) => {
   let element = document.querySelector(selector);
   cb(element);
@@ -28,10 +28,10 @@ const fetch = (link, cb) => {
     }
   };
   xhr.open("GET", link);
-  xhr.setRequestHeader(
-    "Authorization",
-    "token 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"
-  );
+  // xhr.setRequestHeader(
+  //   "Authorization",
+  //   "token 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"
+  // );
   xhr.send();
 };
 
@@ -43,37 +43,56 @@ searchBtn.addEventListener("click", () => {
 
   fetch(url, (data) => {
     const { error, status, response } = data;
-    if (error) {
-      console.log(response);
-      console.log(status);
-    } else {
-      domManpulation("#github-user-handle", (ele) => {
-        ele.textContent = response.login;
-      });
 
-      domManpulation("#github-user-link", (ele) => {
-        ele.href = response.html_url;
-      });
+    domManpulation("#github-user-handle", (ele) => {
+      ele.textContent = response.login;
+    });
 
-      domManpulation("#github-user-avatar", (ele) => {
-        ele.src = response.avatar_url;
-      });
-      domManpulation("#github-user-repos", (ele) => {
-        ele.textContent = response.public_repos;
-      });
-    }
-    //languages ???
-    //total stars ???
+    domManpulation("#github-user-link", (ele) => {
+      ele.href = response.html_url;
+    });
+
+    domManpulation("#github-user-avatar", (ele) => {
+      ele.src = response.avatar_url;
+    });
+    domManpulation("#github-user-repos", (ele) => {
+      ele.textContent = response.public_repos;
+    });
   });
   fetch(repoUrl, (data) => {
     const { error, statue, response } = data;
     if (error) {
-      console.log(response);
+      domManpulation(".container", (ele) => {
+        ele.style.opacity = 0;
+        errheader.textContent = "Please try a valid user";
+      });
     } else {
+      errheader.textContent = "";
+      domManpulation(".container", (ele) => {
+        ele.style.opacity = 1;
+      });
+
+      domManpulation("#github-repos-languages", (ele) => {
+        let languagesArr = [];
+        response.forEach((ele) => {
+          if (ele.language !== null) languagesArr.push(ele.language);
+        });
+        let filteredLanguageArr = [...new Set(languagesArr)];
+
+        ele.textContent = filteredLanguageArr.join(", ");
+      });
+
+      domManpulation("#github-repos-stars", (ele) => {
+        let startSum = 0;
+        response.forEach((ele) => {
+          startSum += ele.stargazers_count;
+        });
+        ele.textContent = startSum;
+      });
+
       domManpulation("#github-repo-name", (ele) => {
         ele.textContent = response[0].name;
       });
-
       domManpulation("#github-repo-link", (ele) => {
         ele.href = response[0].html_url;
       });
